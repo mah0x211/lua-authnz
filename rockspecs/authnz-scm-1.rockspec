@@ -25,7 +25,7 @@ build = {
     modules = {
         authnz = "authnz.lua",
         ["authnz.openidc"] = "lib/openidc.lua",
-        ["authnz.google"] = "social/google.lua"
+        ["authnz.google"] = "openidc/google.lua"
     }
 }
 
