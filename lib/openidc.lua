@@ -217,7 +217,7 @@ function OpenIdc:genAuthQuery( opts )
             client_id       = own.clientId,
             redirect_uri    = own.redirectURI,
             -- default code flow
-            response_type   = 'code',
+            response_type   = opts.response_type,
             scope           = { 'openid' },
             state           = self:genState(),
             nonce           = self:genNonce()
