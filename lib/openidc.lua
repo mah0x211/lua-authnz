@@ -264,7 +264,7 @@ function OpenIdc:authorize( qry, state )
     else
         local own = protected( self );
         local err = self:discovery();
-        local res, jwt;
+        local res;
         
         if err then
             return nil, err;
@@ -295,20 +295,21 @@ function OpenIdc:authorize( qry, state )
             return nil, table.concat( err, '\n' );
         end
         
-        -- verify and docode id_token
-        jwt, err = self:verifyIdToken( res.body.id_token );
-        if err then
-            return nil, err;
-        end
-        
-        return {
-            jwt = jwt,
-            token_type = res.body.token_type,
-            expires_in = res.body.expires_in,
-            access_token = res.body.access_token,
-            refresh_token = res.body.refresh_token
-        };
+        return self:verifyResponse( res );
     end
+end
+
+
+function OpenIdc:verifyResponse( res )
+    -- verify and docode id_token
+    local err;
+    
+    res.body.id_token, err = self:verifyIdToken( res.body.id_token );
+    if err then
+        return nil, err;
+    end
+    
+    return res.body;
 end
 
 
