@@ -20,7 +20,7 @@
   OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
   THE SOFTWARE.
    
-  social/google.lua
+  openidc/google.lua
   lua-authnz
   
   Created by Masatoshi Teruya on 14/12/10.
@@ -53,6 +53,9 @@ Google.inherits {
 
 function Google:init( opts )
     opts = opts or {};
+    if type( opts ) ~= 'table' then
+        return nil, 'opts must be table';
+    end
     opts.discoveryURI = DISCOVERY_URI;
     
     return base['authnz.openidc.OpenIdc'].init( self, opts );
