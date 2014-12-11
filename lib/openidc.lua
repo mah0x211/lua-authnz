@@ -253,11 +253,14 @@ end
 --  state = state-value
 --  error = access_denied
 function OpenIdc:authorize( qry, state )
-    if qry.error then
-        return nil, qry.error;
+    if not typeof.table( qry ) then
+        return nil, 'qry must be table';
     -- check state
     elseif state ~= qry.state then
         return nil, 'invalid state token';
+    -- check error
+    elseif qry.error then
+        return nil, qry.error;
     else
         local own = protected( self );
         local err = self:discovery();
