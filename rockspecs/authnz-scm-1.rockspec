@@ -27,6 +27,7 @@ build = {
         ["authnz.openidc"] = "lib/openidc.lua",
         ["authnz.google"] = "openidc/google.lua",
         ["authnz.oauth2"] = "lib/oauth2.lua",
+        ["authnz.dropbox"] = "oauth2/dropbox.lua"
     }
 }
 
