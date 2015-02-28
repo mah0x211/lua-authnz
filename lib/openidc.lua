@@ -122,7 +122,7 @@ function OpenIdc:discovery()
             end
             return table.concat( err, '\n' );
         end
-        own.discoveryTTL = date( res.header.expires );
+        own.discoveryTTL = date( res.header.EXPIRES );
         own.issuer = cfg.issuer;
         own.revokeURI = cfg.revocation_endpoint;
         own.authorizeURI = cfg.authorization_endpoint;

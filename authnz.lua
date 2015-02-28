@@ -117,12 +117,12 @@ local function createClient( own, OPTIONS, opts )
     
     -- create http client
     if client == 'luasocket' then
-        return own.client.new( nil, own.timeout );
+        return own.client.new( true, own.timeout );
     -- httpcli.resty
     elseif not own.client_gateway then
         return nil, OPTIONS.client_gateway.msg;
     else
-        return own.client.new( own.client_gateway, nil, own.timeout );
+        return own.client.new( own.client_gateway, true, own.timeout );
     end
 end
 
