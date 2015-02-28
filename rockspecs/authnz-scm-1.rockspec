@@ -11,14 +11,15 @@ description = {
 }
 dependencies = {
     "lua >= 5.1",
-    "util >= 1.2.1",
-    "process >= 1.0.0",
-    "halo >= 1.1.0",
-    "httpcli >= 1.1.3",
     "blake2 >= 1.0.0",
-    "url >= 1.0.1",
     "date >= 2.1.1",
-    "jose >= 0.1.0"
+    "halo >= 1.1.0",
+    "httpcli >= 1.3.0",
+    "httpcli-resty >= 1.1.0",
+    "jose >= 0.1.0",
+    "process >= 1.4.0",
+    "url >= 1.0.1",
+    "util >= 1.3.3",
 }
 build = {
     type = "builtin",
