@@ -189,10 +189,10 @@ function OpenIdc:genAuthQuery( opts )
         
         -- set opts.scope
         for _, scope in ipairs( opts.scope ) do
-            if not type.string( scope ) then
+            if not typeof.string( scope ) then
                 return nil, ('opts.scope#%d must be string'):format( _ );
             end
-            scope[#scope+1] = scope;
+            qry.scope[#qry.scope+1] = scope;
         end
         
         -- finalize
