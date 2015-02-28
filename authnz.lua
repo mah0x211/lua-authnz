@@ -29,6 +29,7 @@
 
 -- module
 local flatten = require('util.table').flatten;
+local typeof = require('util.typeof');
 local encodeURI = require('url').encodeURI;
 local gettimeofday = require('process').gettimeofday;
 local blake2b = require('blake2').b;
@@ -56,7 +57,78 @@ local function genRandom()
 end
 
 
+local function createClient( own, OPTIONS, opts )
+    local opt, ok, err, client;
+    
+    -- request client params
+    OPTIONS.client = {
+        req = true,
+        typ = 'string',
+        def = 'luasocket',
+        enm = {
+            luasocket = 'luasocket',
+            resty = 'resty',
+        },
+        msg = 'opts.client must be "luasocket" or "resty"'
+    };
+    OPTIONS.client_gateway = {
+        typ = 'string',
+        msg = 'opts.client_gateway must be string'
+    };
+    OPTIONS.timeout = {
+        typ = 'uint',
+        msg = 'opts.timeout must be uint'
+    };
+
+    -- check params
+    for k, v in pairs( OPTIONS ) do
+        opt = opts[k];
+        if not opt then
+            -- set default value
+            opt = v.def;
+            -- requere but no default value
+            if v.req and not opt then
+                return nil, v.msg;
+            elseif k == 'client' then
+                client = opt;
+                ok, opt, err = pcall( require, 'httpcli.' .. opt );
+                if not ok then
+                    return nil, 'opts.client: ' .. err;
+                end
+            end
+        -- type check
+        elseif not typeof[v.typ]( opt ) then
+            return nil, v.msg;
+        -- enum check
+        elseif v.enm then
+            opt = v.enm[opt];
+            if not opt then
+                return nil, v.msg;
+            elseif k == 'client' then
+                client = opt;
+                ok, opt, err = pcall( require, 'httpcli.' .. opt );
+                if not ok then
+                    return nil, 'opts.client: ' .. err;
+                end
+            end
+        end
+        own[k] = opt;
+    end
+    
+    -- create http client
+    if client == 'luasocket' then
+        return own.client.new( nil, own.timeout );
+    -- httpcli.resty
+    elseif not own.client_gateway then
+        return nil, OPTIONS.client_gateway.msg;
+    else
+        return own.client.new( own.client_gateway, nil, own.timeout );
+    end
+end
+
+
 return {
-    encodeQuery = encodeQuery,
-    genRandom = genRandom
+    encodeQuery     = encodeQuery,
+    genRandom       = genRandom,
+    createClient    = createClient
 };

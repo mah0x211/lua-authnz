@@ -31,27 +31,13 @@
 local typeof = require('util.typeof');
 local date = require('date');
 local jose = require('jose');
+local createClient = require('authnz').createClient;
 local encodeQuery = require('authnz').encodeQuery;
 local genRandom = require('authnz').genRandom;
 
 -- MARK: class OpenIdc
 -- constants
 local OPTIONS = {
-    -- request client params
-    client = {
-        req = true,
-        typ = 'string',
-        def = require('httpcli.luasocket'),
-        enm = {
-            luasocket = require('httpcli.luasocket'),
-            resty = require('httpcli.luasocket')
-        },
-        msg = 'opts.client must be "luasocket" or "resty"'
-    },
-    timeout = {
-        typ = 'uint',
-        msg = 'opts.timeout must be uint'
-    },
     -- openid connect params
     clientId = {
         req = true,
@@ -96,7 +82,7 @@ local OpenIdc = require('halo').class.OpenIdc;
 
 function OpenIdc:init( opts )
     local own = protected( self );
-    local opt, err;
+    local err;
     
     -- check discoveryURI
     if opts.discoveryURI == nil then
@@ -109,31 +95,8 @@ function OpenIdc:init( opts )
         OPTIONS.tokenURI.req = false;
     end
     
-    -- check params
-    for k, v in pairs( OPTIONS ) do
-        opt = opts[k];
-        if not opt then
-            -- set default value
-            opt = v.def;
-            -- requere but no default value
-            if v.req and not opt then
-                return nil, v.msg;
-            end
-        -- type check
-        elseif not typeof[v.typ]( opt ) then
-            return nil, v.msg;
-        -- enum check
-        elseif v.enm then
-            opt = v.enm[opt];
-            if not opt then
-                return nil, v.msg;
-            end
-        end
-        own[k] = opt;
-    end
-    
     -- create http client
-    own.client, err = own.client.new( nil, own.timeout );
+    own.client, err = createClient( own, OPTIONS, opts );
     if err then
         return nil, err;
     end
