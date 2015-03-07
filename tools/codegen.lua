@@ -110,7 +110,7 @@ function $CLASS:$METHOD( $ARGS )
     
     return decodeResponse( own.cli:$ACTION(
         $URI,
-        setAuthorization( otps, own.header )
+        setAuthorization( opts, own.header )
     ));
 end
 ]];
