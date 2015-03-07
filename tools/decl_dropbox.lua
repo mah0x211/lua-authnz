@@ -150,13 +150,13 @@ return {
             get = '/datastores/get_datastore'
         },
         getOrCreateDatastore = {
-            get = '/datastores/get_or_create_datastore'
+            post = '/datastores/get_or_create_datastore'
         },
         createDatastore = {
-            get = '/datastores/create_datastore'
+            post = '/datastores/create_datastore'
         },
         deleteDatastore = {
-            get = '/datastores/delete_datastore'
+            post = '/datastores/delete_datastore'
         },
         getDeltas = {
             get = '/datastores/get_deltas'
