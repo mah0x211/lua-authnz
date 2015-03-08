@@ -63,28 +63,24 @@ function $CLASS:__index( prop )
 end
 
 
-function $CLASS:init( cli, token, ... )
-    if token then
-        local own = protected( self );
-        
-        -- check token
-        if type( token ) ~= 'table' then
-            return nil, 'token must be table';
-        elseif type( token.token_type ) ~= 'string' then
-            return nil, 'token_type must be string';
-        elseif type( token.access_token ) ~= 'string' then
-            return nil, 'access_token must be string';
-        end
-        
-        own.cli = cli;
-        own.token = token;
-        own.header = 'Bearer ' .. token.access_token;
-        rawset( self, 'token', token );
-        
-        return self;
+function $CLASS:init( cli, token )
+    local own = protected( self );
+    
+    -- check token
+    if type( token ) ~= 'table' then
+        return nil, 'token must be table';
+    elseif type( token.token_type ) ~= 'string' then
+        return nil, 'token_type must be string';
+    elseif type( token.access_token ) ~= 'string' then
+        return nil, 'access_token must be string';
     end
     
-    return nil, ...;
+    own.cli = cli;
+    own.token = token;
+    own.header = 'Bearer ' .. token.access_token;
+    rawset( self, 'token', token );
+    
+    return self;
 end
 
 local function setAuthorization( opts, header )
