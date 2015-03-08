@@ -162,6 +162,9 @@ function OAuth2:authorize( qry, state )
         -- token request
         -- spec: http://tools.ietf.org/html/rfc6749#section-4.1.3
         local res, err = own.client:post( own.tokenURI, {
+            header = {
+                accept = 'application/json'
+            },
             body = {
                 client_id       = own.clientId,
                 client_secret   = own.secret,
