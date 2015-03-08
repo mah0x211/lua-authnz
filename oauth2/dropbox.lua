@@ -62,8 +62,8 @@ function Dropbox:init( opts )
 end
 
 
-function Dropbox:createClient( token, ... )
-    return DropboxCli.new( protected(self).client, token, ... );
+function Dropbox:createClient( token )
+    return DropboxCli.new( protected(self).client, token );
 end
 
 
