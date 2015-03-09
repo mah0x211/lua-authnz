@@ -88,13 +88,4 @@ function Dropbox:finalizeAuthQuery( qry, opts )
 end
 
 
---
--- NOTE: dropbox oauth2 API does not set a "application/json" to a 
---       content-type header.
---
-function Dropbox:verifyResponse( res )
-    return decodeJSON( res.body );
-end
-
-
 return Dropbox.exports;
