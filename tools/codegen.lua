@@ -50,20 +50,20 @@ local TMPL_CONSTANTS = [[
 
 local TMPL_OAUTH2_CLASS = [[
 -- class
-local $CLASS = require('halo').class.$CLASS;
+local ${CLASS} = require('halo').class.${CLASS};
 
 
-function $CLASS:__newindex( prop )
+function ${CLASS}:__newindex( prop )
     error( ('attempted to assign to readonly property: %q'):format( prop ), 2 );
 end
 
 
-function $CLASS:__index( prop )
+function ${CLASS}:__index( prop )
     return protected( self ).token[prop];
 end
 
 
-function $CLASS:init( cli, token )
+function ${CLASS}:init( cli, token )
     local own = protected( self );
     
     -- check token
@@ -101,21 +101,27 @@ end
 
 local TMPL_METHOD = [[
 -- method
-function $CLASS:$METHOD( $ARGS )
+function ${CLASS}:${METHOD}( ${ARGS} )
     local own = protected(self);
     
-    return decodeResponse( own.cli:$ACTION(
-        $URI,
+    return decodeResponse( own.cli:${ACTION}(
+        ${URI},
         setAuthorization( opts, own.header )
     ));
 end
 ]];
 
 local TMPL_EXPORT = [[
-return $CLASS.exports;
+return ${CLASS}.exports;
 ]];
 
 local TMPL_STRARG = [[arg%d == nil and '' or tostring( arg%d )]];
+
+-- render template
+local function render( tmpl, repl )
+    return tmpl:gsub( '${([_%u]+)}', repl );
+end
+
 
 -- functions
 local function toConstants( const, key, val )
@@ -133,13 +139,13 @@ end
 
 local function genCli( tmpl, repl, className, baseURI, decl )
     local const = {};
-    local src, uri, arg, strarg;
+    local uri, arg, strarg;
     
     -- declare methods
     for method, def in pairs( decl ) do
         for action, dest in pairs( def ) do
-            repl['$METHOD'] = method;
-            repl['$ACTION'] = action;
+            repl['METHOD'] = method;
+            repl['ACTION'] = action;
             uri = toConstants( 
                 const, method, ('%q'):format( ( def.uri or baseURI ) .. dest )
             );
@@ -153,41 +159,36 @@ local function genCli( tmpl, repl, className, baseURI, decl )
             
             -- create uri
             if #strarg > 0 then
-                repl['$URI'] = ('%s:format( %s )'):format(
+                repl['URI'] = ('%s:format( %s )'):format(
                     uri, concat( strarg, ' .. ' )
                 );
             else
-                repl['$URI'] = uri;
+                repl['URI'] = uri;
             end
             
             -- create arguments
             -- add opts argument at tail
             arg[#arg+1] = 'opts';
-            repl['$ARGS'] = concat( arg, ', ' );
+            repl['ARGS'] = concat( arg, ', ' );
             
             -- generate method
-            src = TMPL_METHOD;
-            for sym in pairs( repl ) do
-                src = src:gsub( sym, repl );
-            end
-            tmpl[#tmpl+1] = src;
+            tmpl[#tmpl+1] = render( TMPL_METHOD, repl );
             break;
         end
     end
     
     -- declare constants and export
     tmpl[3] = TMPL_CONSTANTS:format( concat( const, '\n' ) );
-    tmpl[#tmpl+1] = TMPL_EXPORT:gsub( '$CLASS', repl );
-    -- to source code
-    src = concat( tmpl, '\n' );
+    tmpl[#tmpl+1] = render( TMPL_EXPORT, repl );
     
-    return src;
+    -- to source code
+    return concat( tmpl, '\n' );
 end
 
 
 local function genOAuth2Cli( className, decl )
     local repl = {
-        ['$CLASS'] = className
+        ['CLASS'] = className
     };
     local tmpl = {};
     
@@ -195,7 +196,8 @@ local function genOAuth2Cli( className, decl )
     tmpl[1] = TMPL_NOTICE:format( className, os.date() );
     tmpl[2] = decl.RESPONSE_DECODER or DEFAULT_DECODER;
     tmpl[3] = '';
-    tmpl[4] = TMPL_OAUTH2_CLASS:gsub( '$CLASS', repl );
+    tmpl[4] = render( TMPL_OAUTH2_CLASS, repl );
+    
     return genCli( tmpl, repl, className, decl.BASE_URI, decl.API );
 end
 
