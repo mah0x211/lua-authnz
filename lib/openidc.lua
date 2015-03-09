@@ -31,9 +31,9 @@
 local typeof = require('util.typeof');
 local date = require('date');
 local jose = require('jose');
-local createClient = require('authnz').createClient;
-local encodeQuery = require('authnz').encodeQuery;
-local genRandom = require('authnz').genRandom;
+local createClient = require('authnz.util').createClient;
+local encodeQuery = require('authnz.util').encodeQuery;
+local genRandom = require('authnz.util').genRandom;
 
 -- MARK: class OpenIdc
 -- constants

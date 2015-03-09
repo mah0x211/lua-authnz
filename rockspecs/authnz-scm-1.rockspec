@@ -31,6 +31,7 @@ build = {
         ["authnz.oauth2"]           = "lib/oauth2.lua",
         ["authnz.dropbox"]          = "oauth2/dropbox.lua",
         ["authnz.client.dropbox"]   = "client/dropbox.lua"
+        ["authnz.util"]             = "lib/util.lua",
     }
 }
 
