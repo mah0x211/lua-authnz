@@ -29,28 +29,13 @@
 
 local CONTENT_URI   = 'https://api-content.dropbox.com/1';
 local NOTIFY_URI    = 'https://api-notify.dropbox.com/1';
-local RESPONSE_DECODER = [[
--- 
--- NOTE: dropbox oauth2 API does not set a "application/json" to a 
---       content-type header.
---
-local decodeJSON = require('cjson.safe').decode;
-local function decodeResponse( res, ... )
-    if res and res.body and type( res.body ) == 'string' then
-        local body, err = decodeJSON( res.body );
-        
-        if body then
-            res.body = body;
-        end
-    end
-    
-    return res, ...;
-end
-]];
 
 return {
     BASE_URI = 'https://api.dropbox.com/1',
-    RESPONSE_DECODER = RESPONSE_DECODER,
+    REQUEST_HEADER = {
+        -- NOTE: should set Accept header
+        ['Accept'] = 'application/json'
+    },
     API = {
         -- Core API
         -- account
