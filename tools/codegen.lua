@@ -48,6 +48,9 @@ local TMPL_CONSTANTS = [[
 %s
 ]];
 
+local TMPL_REQUEST_HEADER = [[
+    opts.header[%q] = %q;]]
+
 local TMPL_OAUTH2_CLASS = [[
 -- class
 local ${CLASS} = require('halo').class.${CLASS};
@@ -92,6 +95,7 @@ local function setAuthorization( opts, header )
         opts.header = {};
     end
     
+${REQUEST_HEADER}
     opts.header['Authorization'] = header;
     
     return opts;
@@ -190,7 +194,14 @@ local function genOAuth2Cli( className, decl )
     local repl = {
         ['CLASS'] = className
     };
+    local headers = {};
     local tmpl = {};
+    
+    -- generate default header
+    for k, v in pairs( decl.REQUEST_HEADER ) do
+        headers[#headers+1] = TMPL_REQUEST_HEADER:format( k, v );
+    end
+    repl['REQUEST_HEADER'] = concat( headers, '\n' );
     
     -- declare class
     tmpl[1] = TMPL_NOTICE:format( className, os.date() );
