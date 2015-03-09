@@ -81,7 +81,6 @@ function ${CLASS}:init( cli, token )
     own.cli = cli;
     own.token = token;
     own.header = 'Bearer ' .. token.access_token;
-    rawset( self, 'token', token );
     
     return self;
 end
