@@ -32,7 +32,7 @@ local flatten = require('util.table').flatten;
 local typeof = require('util.typeof');
 local encodeURI = require('url').encodeURI;
 local gettimeofday = require('process').gettimeofday;
-local blake2b = require('blake2').b;
+local siphash48 = require('siphash').encode48;
 local random = math.random;
 -- init random seed
 math.randomseed( gettimeofday() );
@@ -53,7 +53,7 @@ end
 
 -- generate random value
 local function genRandom()
-    return blake2b( gettimeofday(), random() );
+    return siphash48( gettimeofday(), tostring( random() ):sub( 1, 16 ) );
 end
 
 
