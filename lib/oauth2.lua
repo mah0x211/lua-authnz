@@ -193,6 +193,39 @@ function OAuth2:authorize( qry, state )
 end
 
 
+function OAuth2:refreshToken( accessToken, refereshToken )
+    local own = protected( self );
+    local res, err = own.client.post( own.tokenURI, {
+        header = {
+            accept          = 'application/json',
+            authorization   = 'Bearer ' .. accessToken
+        },
+        query = {
+            client_id       = own.clientId,
+            client_secret   = own.secret,
+            grant_type      = 'refresh_token',
+            refresh_token   = refreshToken
+        }
+    });
+    
+    -- request error
+    if err then
+        return nil, err;
+    -- token error spec: 
+    -- http://tools.ietf.org/html/rfc6749#section-5.2
+    elseif res.status ~= 200 then
+        err = {};
+        for _, v in pairs( res.body ) do
+            err[#err+1] = v;
+        end
+        
+        return nil, table.concat( err, '\n' );
+    end
+    
+    return verifyResponse( res );
+end
+
+
 function OAuth2:verifyResponse( res )
     return res.body;
 end
