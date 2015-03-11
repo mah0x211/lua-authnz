@@ -36,7 +36,7 @@ local genRandom = require('authnz.util').genRandom;
 -- MARK: class OAuth2
 -- constants
 local OPTIONS = {
-    -- openid connect params
+    -- oauth2 params
     clientId = {
         req = true,
         typ = 'string',
@@ -193,18 +193,18 @@ function OAuth2:authorize( qry, state )
 end
 
 
-function OAuth2:refresh( accessToken, refreshToken )
+function OAuth2:refresh()
     local own = protected( self );
     local res, err = own.client:post( own.tokenURI, {
         header = {
             accept          = 'application/json',
-            authorization   = 'Bearer ' .. accessToken
+            authorization   = 'Bearer ' .. own.accessToken
         },
         query = {
             client_id       = own.clientId,
             client_secret   = own.secret,
             grant_type      = 'refresh_token',
-            refresh_token   = refreshToken
+            refresh_token   = own.refreshToken
         }
     });
     
