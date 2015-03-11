@@ -67,38 +67,6 @@ local OPTIONS = {
 local OAuth2 = require('halo').class.OAuth2;
 
 
-function OAuth2:__index( method )
-    local own = protected( self );
-    
-    -- unsupported method
-    if not typeof.Function( own.req[method] ) then
-        return function()
-            return nil, ('unsupported http method: %q'):format( method );
-        end
-    end
-    
-    
-    return function( _, uri, query, body, opts )
-        if type( opts ) ~= 'table' then
-            opts = {
-                header = {};
-            };
-        elseif type( opts.header ) ~= 'table' then
-            opts.header = {};
-        end
-        -- set query and body
-        opts.query = query;
-        opts.body = body;
-        -- set headers
-        opts.header['Authorization'] = own.authHdrVal;
-        opts.header["Content-Type"] = "application/json";
-        opts.header["Accept"] = "application/json";
-        
-        return own.req[method]( own.req, uri, opts );
-    end
-end
-
-
 function OAuth2:init( opts )
     local own = protected( self );
     local err;
