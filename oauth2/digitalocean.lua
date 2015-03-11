@@ -19,16 +19,45 @@
   LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
   OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
   THE SOFTWARE.
-   
-  authnz.lua
+  
+  oauth2/digitalocean.lua
   lua-authnz
   
   Created by Masatoshi Teruya on 15/03/09.
   
 --]]
 
-return {
-    google = require('authnz.google'),
-    dropbox = require('authnz.dropbox'),
-    digitalocean = require('authnz.digitalocean')
+-- module
+local typeof = require('util.typeof');
+local DigitalOceanCli = require('digitalocean');
+-- constants
+local AUTHORIZE_URI = 'https://cloud.digitalocean.com/v1/oauth/authorize';
+local TOKEN_URI     = 'https://cloud.digitalocean.com/v1/oauth/token';
+-- class
+local DigitalOcean = require('halo').class.DigitalOcean;
+
+
+DigitalOcean.inherits {
+    'authnz.oauth2.OAuth2'
 };
+
+
+function DigitalOcean:init( opts )
+    opts = opts or {};
+    if not typeof.table( opts ) then
+        return nil, 'opts must be table';
+    end
+    -- add required fields
+    opts.authorizeURI = AUTHORIZE_URI;
+    opts.tokenURI = TOKEN_URI;
+    
+    return base['authnz.oauth2.OAuth2'].init( self, opts );
+end
+
+
+function DigitalOcean:createClient( token )
+    return DigitalOceanCli.new( protected(self).client, token );
+end
+
+
+return DigitalOcean.exports;
