@@ -67,6 +67,38 @@ local OPTIONS = {
 local OAuth2 = require('halo').class.OAuth2;
 
 
+function OAuth2:__index( method )
+    local own = protected( self );
+    
+    -- unsupported method
+    if not typeof.Function( own.req[method] ) then
+        return function()
+            return nil, ('unsupported http method: %q'):format( method );
+        end
+    end
+    
+    
+    return function( _, uri, query, body, opts )
+        if type( opts ) ~= 'table' then
+            opts = {
+                header = {};
+            };
+        elseif type( opts.header ) ~= 'table' then
+            opts.header = {};
+        end
+        -- set query and body
+        opts.query = query;
+        opts.body = body;
+        -- set headers
+        opts.header['Authorization'] = own.authHdrVal;
+        opts.header["Content-Type"] = "application/json";
+        opts.header["Accept"] = "application/json";
+        
+        return own.req[method]( own.req, uri, opts );
+    end
+end
+
+
 function OAuth2:init( opts )
     local own = protected( self );
     local err;
@@ -207,6 +239,8 @@ function OAuth2:authorize( qry, state )
             own.expiresIn = res.expires_in;
             own.tokenType = res.token_type;
             own.refreshToken = res.refresh_token;
+            -- create authorization header value
+            own.authHdrVal = own.tokenType .. ' ' .. own.accessToken;
         end
         
         return res, err;
@@ -239,6 +273,8 @@ function OAuth2:refresh()
         own.accessToken = res.access_token;
         own.expiresIn = res.expires_in;
         own.tokenType = res.token_type;
+        -- create authorization header value
+        own.authHdrVal = own.tokenType .. ' ' .. own.accessToken;
     end
     
     return res, err;
