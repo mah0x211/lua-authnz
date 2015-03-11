@@ -60,7 +60,7 @@ end
 local function createHttpClient( own, OPTIONS, opts )
     local opt, ok, err, client;
     
-    -- optional fields
+    -- optional token fields
     OPTIONS.accessToken = {
         typ = 'string',
         msg = 'opts.accessTokne must be string'

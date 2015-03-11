@@ -75,6 +75,12 @@ function OAuth2:init( opts )
     own.req, err = createHttpClient( own, OPTIONS, opts );
     if err then
         return nil, err;
+    -- create authorization header value
+    elseif own.accessToken then
+        own.authHdrVal = ('%s %s'):format(
+            -- default token type: 'Bearer'
+            own.tokenType or 'Bearer', own.accessToken
+        );
     end
     
     return self;
@@ -221,7 +227,7 @@ function OAuth2:refresh()
     local res, err = verifyResponse( self, own.req:post( own.tokenURI, {
         header = {
             accept          = 'application/json',
-            authorization   = 'Bearer ' .. own.accessToken
+            authorization   = own.authHdrVal
         },
         query = {
             client_id       = own.clientId,
