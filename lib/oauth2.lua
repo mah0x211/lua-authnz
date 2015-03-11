@@ -29,11 +29,11 @@
 
 -- module
 local typeof = require('util.typeof');
-local createClient = require('authnz.util').createClient;
+local createHttpClient = require('authnz.util').createHttpClient;
 local encodeQuery = require('authnz.util').encodeQuery;
 local genRandom = require('authnz.util').genRandom;
 
--- MARK: class OpenIdc
+-- MARK: class OAuth2
 -- constants
 local OPTIONS = {
     -- openid connect params
@@ -72,7 +72,7 @@ function OAuth2:init( opts )
     local err;
     
     -- create http client
-    own.client, err = createClient( own, OPTIONS, opts );
+    own.req, err = createHttpClient( own, OPTIONS, opts );
     if err then
         return nil, err;
     end
@@ -161,7 +161,7 @@ function OAuth2:authorize( qry, state )
         local own = protected( self );
         -- token request
         -- spec: http://tools.ietf.org/html/rfc6749#section-4.1.3
-        local res, err = own.client:post( own.tokenURI, {
+        local res, err = own.req:post( own.tokenURI, {
             header = {
                 accept = 'application/json'
             },

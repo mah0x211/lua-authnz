@@ -57,7 +57,7 @@ local function genRandom()
 end
 
 
-local function createClient( own, OPTIONS, opts )
+local function createHttpClient( own, OPTIONS, opts )
     local opt, ok, err, client;
     
     -- request client params
@@ -128,7 +128,7 @@ end
 
 
 return {
-    encodeQuery     = encodeQuery,
-    genRandom       = genRandom,
-    createClient    = createClient
+    encodeQuery         = encodeQuery,
+    genRandom           = genRandom,
+    createHttpClient    = createHttpClient
 };

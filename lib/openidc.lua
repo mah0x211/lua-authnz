@@ -31,7 +31,7 @@
 local typeof = require('util.typeof');
 local date = require('date');
 local jose = require('jose');
-local createClient = require('authnz.util').createClient;
+local createHttpClient = require('authnz.util').createHttpClient;
 local encodeQuery = require('authnz.util').encodeQuery;
 local genRandom = require('authnz.util').genRandom;
 
@@ -96,7 +96,7 @@ function OpenIdc:init( opts )
     end
     
     -- create http client
-    own.client, err = createClient( own, OPTIONS, opts );
+    own.req, err = createHttpClient( own, OPTIONS, opts );
     if err then
         return nil, err;
     end
@@ -110,7 +110,7 @@ function OpenIdc:discovery()
     
     if own.discoveryURI ~= nil and not own.discoveryTTL or 
        own.discoveryTTL < date(true) then
-        local res, err = own.client:get( own.discoveryURI );
+        local res, err = own.req:get( own.discoveryURI );
         local cfg = res.body;
         
         if err then
@@ -234,7 +234,7 @@ function OpenIdc:authorize( qry, state )
         end
         -- token request
         -- spec: http://openid.net/specs/openid-connect-core-1_0.html#TokenEndpoint
-        res, err = own.client:post( own.tokenURI, {
+        res, err = own.req:post( own.tokenURI, {
             body = {
                 client_id       = own.clientId,
                 client_secret   = own.secret,
@@ -299,7 +299,7 @@ function OpenIdc:verifyIdToken( id_token )
         local kid = jwt.header.kid;
         local alg = jwt.header.alg;
         -- fetch JWK set
-        local res, err = own.client:get( own.jwksURI );
+        local res, err = own.req:get( own.jwksURI );
         local jws, _;
         
         -- fetch error
@@ -351,7 +351,7 @@ function OpenIdc:request( token, method, uri, opts )
     end
     opts.header['Authorization'] = token.token_type .. ' ' .. token.access_token;
     
-    return own.client[method]( own.client, uri, opts );
+    return own.req[method]( own.req, uri, opts );
 end
 
 
