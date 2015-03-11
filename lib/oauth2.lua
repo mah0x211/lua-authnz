@@ -193,7 +193,7 @@ function OAuth2:authorize( qry, state )
 end
 
 
-function OAuth2:refreshToken( accessToken, refereshToken )
+function OAuth2:refresh( accessToken, refreshToken )
     local own = protected( self );
     local res, err = own.client:post( own.tokenURI, {
         header = {
