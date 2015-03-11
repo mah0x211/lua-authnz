@@ -204,6 +204,8 @@ function OAuth2:authorize( qry, state )
         -- update accessToken and refreshToken
         else
             own.accessToken = res.access_token;
+            own.expiresIn = res.expires_in;
+            own.tokenType = res.token_type;
             own.refreshToken = res.refresh_token;
         end
         
@@ -235,6 +237,8 @@ function OAuth2:refresh()
     -- update accessToken
     else
         own.accessToken = res.access_token;
+        own.expiresIn = res.expires_in;
+        own.tokenType = res.token_type;
     end
     
     return res, err;
