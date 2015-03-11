@@ -245,6 +245,18 @@ function OAuth2:refresh()
 end
 
 
+function OAuth2:token()
+    local own = protected( self );
+    
+    return {
+        accessToken = own.accessToken,
+        expiresIn = own.expiresIn,
+        tokenType = own.tokenType,
+        refreshToken = own.refreshToken
+    };
+end
+
+
 function OAuth2:verifyResponse( res )
     return res.body;
 end
