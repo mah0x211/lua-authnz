@@ -195,7 +195,7 @@ end
 
 function OAuth2:refreshToken( accessToken, refereshToken )
     local own = protected( self );
-    local res, err = own.client.post( own.tokenURI, {
+    local res, err = own.client:post( own.tokenURI, {
         header = {
             accept          = 'application/json',
             authorization   = 'Bearer ' .. accessToken
