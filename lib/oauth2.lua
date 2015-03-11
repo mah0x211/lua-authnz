@@ -145,6 +145,27 @@ function OAuth2:genAuthQuery( opts )
 end
 
 
+
+local function verifyResponse( self, res, err )
+    -- request error
+    if err then
+        return nil, err;
+    -- token error spec: 
+    -- http://tools.ietf.org/html/rfc6749#section-5.2
+    elseif res.status ~= 200 then
+        err = {};
+        for _, v in pairs( res.body ) do
+            err[#err+1] = v;
+        end
+        
+        return nil, table.concat( err, '\n' );
+    end
+    
+    -- call method
+    return self:verifyResponse( res );
+end
+
+
 -- query
 --  state = state-value
 --  error = access_denied
@@ -161,7 +182,7 @@ function OAuth2:authorize( qry, state )
         local own = protected( self );
         -- token request
         -- spec: http://tools.ietf.org/html/rfc6749#section-4.1.3
-        local res, err = own.req:post( own.tokenURI, {
+        local res, err = verifyResponse( self, own.req:post( own.tokenURI, {
             header = {
                 accept = 'application/json'
             },
@@ -172,30 +193,28 @@ function OAuth2:authorize( qry, state )
                 grant_type      = 'authorization_code',
                 code            = qry.code
             }
-        });
+        }));
+        
         
         -- request error
         if err then
             return nil, err;
-        -- token error spec: 
-        -- http://tools.ietf.org/html/rfc6749#section-5.2
-        elseif res.status ~= 200 then
-            err = {};
-            for _, v in pairs( res.body ) do
-                err[#err+1] = v;
-            end
-            
-            return nil, table.concat( err, '\n' );
+        -- response spec
+        -- http://tools.ietf.org/html/rfc6749#section-5.1
+        -- update accessToken and refreshToken
+        else
+            own.accessToken = res.access_token;
+            own.refreshToken = res.refresh_token;
         end
         
-        return self:verifyResponse( res );
+        return res, err;
     end
 end
 
 
 function OAuth2:refresh()
     local own = protected( self );
-    local res, err = own.client:post( own.tokenURI, {
+    local res, err = verifyResponse( self, own.client:post( own.tokenURI, {
         header = {
             accept          = 'application/json',
             authorization   = 'Bearer ' .. own.accessToken
@@ -206,23 +225,19 @@ function OAuth2:refresh()
             grant_type      = 'refresh_token',
             refresh_token   = own.refreshToken
         }
-    });
+    }));
     
     -- request error
     if err then
         return nil, err;
-    -- token error spec: 
-    -- http://tools.ietf.org/html/rfc6749#section-5.2
-    elseif res.status ~= 200 then
-        err = {};
-        for _, v in pairs( res.body ) do
-            err[#err+1] = v;
-        end
-        
-        return nil, table.concat( err, '\n' );
+    -- response spec
+    -- http://tools.ietf.org/html/rfc6749#section-5.1
+    -- update accessToken
+    else
+        own.accessToken = res.access_token;
     end
     
-    return verifyResponse( res );
+    return res, err;
 end
 
 
