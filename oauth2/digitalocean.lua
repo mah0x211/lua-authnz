@@ -56,7 +56,7 @@ end
 
 
 function DigitalOcean:createClient( token )
-    return DigitalOceanCli.new( protected(self).client, token );
+    return DigitalOceanCli.new( protected(self).req, token );
 end
 
 

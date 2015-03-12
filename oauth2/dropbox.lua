@@ -63,7 +63,7 @@ end
 
 
 function Dropbox:createClient( token )
-    return DropboxCli.new( protected(self).client, token );
+    return DropboxCli.new( protected(self).req, token );
 end
 
 
