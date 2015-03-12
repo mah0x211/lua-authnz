@@ -13,6 +13,7 @@ dependencies = {
     "lua >= 5.1",
     "date >= 2.1.1",
     "digitalocean >= 0.2.0",
+    "dropbox >= 0.1.0",
     "halo >= 1.1.2",
     "httpcli >= 1.3.0",
     "httpcli-resty >= 1.1.0",
@@ -32,7 +33,6 @@ build = {
         ["authnz.google"]           = "openidc/google.lua",
         ["authnz.oauth2"]           = "lib/oauth2.lua",
         ["authnz.dropbox"]          = "oauth2/dropbox.lua",
-        ["authnz.client.dropbox"]   = "client/dropbox.lua",
         ["authnz.digitalocean"]     = "oauth2/digitalocean.lua"
     }
 }

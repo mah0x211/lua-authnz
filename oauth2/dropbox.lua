@@ -32,7 +32,7 @@ local typeof = require('util.typeof');
 local decodeJSON = require('cjson.safe').decode;
 local keys = require('util.table').keys;
 local concat = table.concat;
-local DropboxCli = require('authnz.client.dropbox');
+local DropboxCli = require('dropbox');
 -- constants
 local AUTHORIZE_URI = 'https://www.dropbox.com/1/oauth2/authorize';
 local TOKEN_URI     = 'https://api.dropbox.com/1/oauth2/token';
